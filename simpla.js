@@ -3,18 +3,11 @@ $(document).ready(function () {
     const userSession = JSON.parse(sessionStorage.getItem('userSession'));
     
     const sessionExpiry = userSession ? new Date(userSession.expiry) : null;
-    // console.log(sessionExpiry)
-    // if (userSession && sessionExpiry > new Date() && window.location.pathname === '/cmms.html') {
-    //     redirectToDashboard();
-    // }
 
     if (userSession && sessionExpiry > new Date()) {
         redirectToDashboard();
     }
 
-    if ((!userSession || sessionExpiry <= new Date())) {
-        redirectToLogin();
-    }
     const loginForm = document.getElementById('login-form');
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -76,5 +69,5 @@ function hideLoader() {
 }
 
 function redirectToDashboard() {
-    window.location.href = 'contries.html'; // Replace with your dashboard page
+    window.location.href = 'contries.html';
 }
