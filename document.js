@@ -8,13 +8,15 @@ $(document).ready(function () {
     const userSession = JSON.parse(sessionStorage.getItem('userSession'));
     const token = userSession ? userSession.token : null;
     
-    getDocumentList(id, token);
+    const apiBaseUrl = window.settings.apiBaseUrl; // Access global settings
+console.log(apiBaseUrl)
+    getDocumentList(id, token, apiBaseUrl);
 
     $(document).on('click', '.delete', function () {
         docId = this.parentElement.className;
         const isConfirmed = window.confirm('Are you sure you want to delete this?');
         if (isConfirmed) {
-            deleteDocument(docId, token, id);
+            deleteDocument(docId, token, id, apiBaseUrl);
         }
     })
 
@@ -29,7 +31,7 @@ $(document).ready(function () {
         confirmed_to_prod = this.children[0].getAttribute('confirmed_to_prod');
         is_notified = this.children[0].getAttribute('is_notified');
         docId = this.parentElement.id
-        EditDocument(displayName, docId, fileName, confirmed_to_prod, is_notified);
+        EditDocument(displayName, docId, fileName, confirmed_to_prod, is_notified, apiBaseUrl);
     })
 
     // popup to add or edit document 
@@ -70,13 +72,13 @@ $(document).ready(function () {
         e.preventDefault();
         check = $("#doc_heading")[0].innerText
         if(check == "Add Document") {
-            addNewDoc(id, token);
+            addNewDoc(id, token, apiBaseUrl);
         } else {
-            updateDoc(id, token);
+            updateDoc(id, token, apiBaseUrl);
         }
     });
 
-    function addNewDoc(id, token) {
+    function addNewDoc(id, token, apiBaseUrl) {
         var files = $('#file')[0].files;
         var fileName = $('#file-name').val();
         var proprietary = $('#proprietary')[0].checked
@@ -99,7 +101,7 @@ $(document).ready(function () {
         formData.append('country', countryId);
         showLoader();
         $.ajax({
-            url: 'https://sbx.simpla.ai:8000/api/v1/dms/documents/',
+            url: `${apiBaseUrl}/dms/documents/`,
             type: 'POST',
             data: formData,
             headers: {
@@ -108,7 +110,7 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             success: function (response) {
-                getDocumentList(id, token);
+                getDocumentList(id, token, apiBaseUrl);
                 const popupContainer = document.getElementById("popupContainer");
                 const addForm = document.getElementById("add-edit-document");
                 addForm.reset();
@@ -128,7 +130,7 @@ $(document).ready(function () {
         });
     }
 
-    function updateDoc(id, token) {
+    function updateDoc(id, token, apiBaseUrl) {
         var files = $('#file')[0].files;
         var fileName = $('#file-name').val();
         var docId = $('#doc_id').val();
@@ -148,7 +150,7 @@ $(document).ready(function () {
 
         showLoader();
         $.ajax({
-            url: `https://sbx.simpla.ai:8000/api/v1/dms/documents/${docId}/`,
+            url: `${apiBaseUrl}/dms/documents/${docId}/`,
             type: 'PATCH',
             data: formData,
             headers: {
@@ -157,7 +159,7 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             success: function (response) {
-                getDocumentList(id, token);
+                getDocumentList(id, token, apiBaseUrl);
                 const popupContainer = document.getElementById("popupContainer");
                 const addForm = document.getElementById("add-edit-document");
                 addForm.reset();
@@ -197,9 +199,9 @@ $(document).ready(function () {
     })
 });
 
-function getDocumentList(id, token) {
+function getDocumentList(id, token, apiBaseUrl) {
     $.ajax({
-        url: `https://sbx.simpla.ai:8000/api/v1/dms/documents/?namespace=${id}`,
+        url: `${apiBaseUrl}/dms/documents/?namespace=${id}`,
         type: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -212,7 +214,7 @@ function getDocumentList(id, token) {
         error: function (xhr, status, error) {
             hideLoader();
             console.error('Error fetching countries:', error);
-            alert('Failed to fetch countries. Please try again.');
+            alert('Failed to fetch Document. Please try again.');
         }
     });
 }
@@ -257,10 +259,10 @@ function displayDocuments(documents) {
     }
 }
 
-function deleteDocument(id, token, nid) {
+function deleteDocument(id, token, nid, apiBaseUrl) {
     showLoader();
     $.ajax({
-        url: `https://sbx.simpla.ai:8000/api/v1/dms/documents/${id}/`,
+        url: `${apiBaseUrl}/dms/documents/${id}/`,
         type: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -270,7 +272,7 @@ function deleteDocument(id, token, nid) {
         success: function (response) {
             alert('File deleted successfully');
             $("#" + id)[0].parentElement.remove();
-            getDocumentList(nid, token);
+            getDocumentList(nid, token, apiBaseUrl);
             hideLoader();
         },
         error: function (xhr, status, error) {

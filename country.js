@@ -7,8 +7,10 @@ $(document).ready(function () {
     const userSession = JSON.parse(sessionStorage.getItem('userSession'));
     const token = userSession ? userSession.token : null;
     
+    const apiBaseUrl = window.settings.apiBaseUrl; // Access global settings
+
     // Call the function to get countries list
-    getNameSpaceList(countryId, token);
+    getNameSpaceList(countryId, token, apiBaseUrl);
 
     const addCountryModal = document.getElementById('addCountryModal');
     const addCountryForm = document.getElementById('add-country-form');
@@ -26,14 +28,14 @@ $(document).ready(function () {
     addCountryForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const countryName = document.getElementById('country-name').value;
-        addNewNameSpace(countryName, token, countryId)
+        addNewNameSpace(countryName, token, countryId, apiBaseUrl)
     });
 });
 
-function getNameSpaceList(id, token) {
+function getNameSpaceList(id, token, apiBaseUrl) {
     showLoader();
     $.ajax({
-        url: `https://sbx.simpla.ai:8000/api/v1/dms/namespaces/?country=${id}`,
+        url: `${apiBaseUrl}/dms/namespaces/?country=${id}`,
         type: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -76,10 +78,10 @@ function displayCountries(namespaces) {
     }
 }
 
-function addNewNameSpace(name, token, countryId) {
+function addNewNameSpace(name, token, countryId, apiBaseUrl) {
 
     $.ajax({
-        url: `https://sbx.simpla.ai:8000/api/v1/dms/namespaces/`,
+        url: `${apiBaseUrl}/dms/namespaces/`,
         type: 'POST',
         data: JSON.stringify({name: name, country: countryId}),
         headers: {

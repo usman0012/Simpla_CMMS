@@ -10,8 +10,10 @@ $(document).ready(function () {
         return;
     }
 
+    const apiBaseUrl = window.settings.apiBaseUrl; // Access global settings
+
     // Call the function to get countries list
-    getCountriesList(token);
+    getCountriesList(token, apiBaseUrl);
     const addCountryForm = document.getElementById('add-country-form');
 
     $(document).on('click', '#add-country-btn', function () {
@@ -27,14 +29,14 @@ $(document).ready(function () {
     addCountryForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const countryName = document.getElementById('country-name').value;
-        addNewCountry(countryName, token);
+        addNewCountry(countryName, token, apiBaseUrl);
     });
 });
 
-function getCountriesList(token) {
+function getCountriesList(token, apiBaseUrl) {
     showLoader();
     $.ajax({
-        url: `https://sbx.simpla.ai:8000/api/v1/dms/countries/`,
+        url: `${apiBaseUrl}/dms/countries/`,
         type: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -54,10 +56,10 @@ function getCountriesList(token) {
     });
 }
 
-function addNewCountry(name, token) {
+function addNewCountry(name, token, apiBaseUrl) {
 
     $.ajax({
-        url: `https://sbx.simpla.ai:8000/api/v1/dms/countries/`,
+        url: `${apiBaseUrl}/dms/countries/`,
         type: 'POST',
         data: JSON.stringify({name: name}),
         headers: {
