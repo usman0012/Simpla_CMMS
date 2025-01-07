@@ -1,18 +1,18 @@
 $(document).ready(function () { 
-    // Check if user is already logged in
+
     const userSession = JSON.parse(sessionStorage.getItem('userSession'));
     
     const sessionExpiry = userSession ? new Date(userSession.expiry) : null;
     // console.log(sessionExpiry)
-    if (userSession && sessionExpiry > new Date() && window.location.pathname === '/cmms.html') {
-        redirectToDashboard();
-    }
-
-    // if (userSession && sessionExpiry > new Date()) {
+    // if (userSession && sessionExpiry > new Date() && window.location.pathname === '/cmms.html') {
     //     redirectToDashboard();
     // }
 
-    if ((!userSession || sessionExpiry <= new Date()) && window.location.pathname === '/dashboard.html') {
+    if (userSession && sessionExpiry > new Date()) {
+        redirectToDashboard();
+    }
+
+    if ((!userSession || sessionExpiry <= new Date())) {
         redirectToLogin();
     }
     const loginForm = document.getElementById('login-form');
@@ -24,6 +24,7 @@ $(document).ready(function () {
 
 function login() {
     showLoader()
+    const apiBaseUrl = window.settings.apiBaseUrl; // Access global settings
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     formData = {
@@ -32,7 +33,7 @@ function login() {
     };
     try {
         $.ajax({
-            url: `https://sbx.simpla.ai:8000/api/v1/user/login`,
+            url: `${apiBaseUrl}/user/login`,
             type: 'POST',
             data: JSON.stringify(formData),
             contentType: 'application/json',
@@ -51,33 +52,6 @@ function login() {
                     // Redirect to dashboard
                     redirectToDashboard();
                  }
-            },
-            error: function (xhr, status, error) {
-                hideLoader();
-                console.error('Error refreshing status:', error);
-                alert('Error while fetching the files.');
-            },
-            complete: function () {
-            }
-        });
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-function getCountriesList(token) {
-    try {
-        $.ajax({
-            url: `https://sbx.simpla.ai:8000/api/v1/dms/countries/`,
-            type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
-            contentType: 'application/json',
-            processData: 'application/json',
-            success: function (response) {
-                hideLoader();
-                console.log(response);
             },
             error: function (xhr, status, error) {
                 hideLoader();
