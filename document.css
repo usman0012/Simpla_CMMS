@@ -84,6 +84,14 @@
     }
   
   #searchContainer{
+    margin-top: 10px;
+  }
+
+  #prod_section{
+    margin-top: 10px;
+  }
+
+  #doc{
     margin-top: 50px;
   }
 
