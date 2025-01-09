@@ -108,9 +108,9 @@ function displayCountries(countries) {
             const card = document.createElement('div');
             card.className = 'col-md-4';
             card.innerHTML = `
-                <div class="card mb-3 country-card" id = ${country.id}>
+                <div style="cursor:pointer;" class="card mb-3 country-card" id = ${country.id}>
                     <div class="card-body">
-                        <h5 class="card-title">${country.name}</h5>
+                        <h5 class="card-title" title="${country.name}">${country.name}</h5>
                         <p class="card-title">Number of Documents : ${country.number_of_documents}</p>
                         <p class="card-title">Number of NameSpace : ${country.number_of_namespaces}</p>
                     </div>

@@ -24,11 +24,14 @@ $(document).ready(function () {
         addCountryForm.reset();
     });
     
-    
     addCountryForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const countryName = document.getElementById('country-name').value;
         addNewNameSpace(countryName, token, countryId, apiBaseUrl)
+    });
+
+    $(document).on('click', '#back-to-countries', function () {
+        window.location.href = 'contries.html';
     });
 });
 
@@ -62,9 +65,9 @@ function displayCountries(namespaces) {
             const card = document.createElement('div');
             card.className = 'col-md-4';
             card.innerHTML = `
-                <div class="card mb-3 country-card" id = ${namespace.id}>
+                <div style="cursor:pointer" class="card mb-3 country-card" id = ${namespace.id}>
                     <div class="card-body">
-                        <h5 class="card-title">${namespace.name}</h5>
+                        <h5 class="card-title" title="${namespace.name}">${namespace.name}</h5>
                     </div>
                 </div>
             `;

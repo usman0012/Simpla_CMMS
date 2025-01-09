@@ -3,18 +3,17 @@ $(document).ready(function () {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('nid');
     const countryId = urlParams.get('cid');
-    console.log("Country ID:", countryId);
 
     const userSession = JSON.parse(sessionStorage.getItem('userSession'));
     const token = userSession ? userSession.token : null;
     
     const apiBaseUrl = window.settings.apiBaseUrl; // Access global settings
-console.log(apiBaseUrl)
+
     getDocumentList(id, token, apiBaseUrl);
 
     $(document).on('click', '.delete', function () {
         docId = this.parentElement.className;
-        const isConfirmed = window.confirm('Are you sure you want to delete this?');
+        const isConfirmed = window.confirm('Are you certain? This action will permanently delete the file from the database and cannot be undone.');
         if (isConfirmed) {
             deleteDocument(docId, token, id, apiBaseUrl);
         }
@@ -33,6 +32,10 @@ console.log(apiBaseUrl)
         docId = this.parentElement.id
         EditDocument(displayName, docId, fileName, confirmed_to_prod, is_notified, apiBaseUrl);
     })
+
+    $(document).on('click', '#back-to-namespace', function () {
+        window.location.href = `country.html?id=${countryId}`;
+    });
 
     // popup to add or edit document 
     const addItemBtn = document.getElementById("addItemBtn");
@@ -184,7 +187,6 @@ console.log(apiBaseUrl)
         popupContainer.classList.add("max-width");
         $("#preview-doc-sec").show();
         $("#add-edit-doc-sec").hide();
-        // $("#preview-doc-sec").html(`<embed id = 'pdf' src="https://www.antennahouse.com/hubfs/xsl-fo-sample/pdf/basic-link-1.pdf"></embed>`);
         $("#preview-doc-sec").html(`<embed id = 'pdf' src="${s3Link}" style="height: 100%;width:100%"></embed>`);
     }
 
@@ -220,7 +222,10 @@ function getDocumentList(id, token, apiBaseUrl) {
 }
 
 function displayDocuments(documents) {
+     $('#doc_in_prod')[0].innerHTML = ''
      $('#searchContainer')[0].innerHTML = ''
+     is_prod = false;
+     $("#prod_section").hide();
     if(documents && documents.length > 0) {
         documents.forEach(doc => {
             cardHtml = `
@@ -252,6 +257,14 @@ function displayDocuments(documents) {
                         </div>
                     </div>
                 </div>`;
+            if(doc.loaded_to_prod == true){
+                is_prod = true;
+                $('#doc_in_prod').append(cardHtml);
+            }
+
+            if(is_prod == true && $("#prod_section").css("display") === "none") {
+                $("#prod_section").show();
+            }
             $('#searchContainer').append(cardHtml);
         });
     } else {
