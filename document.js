@@ -226,6 +226,7 @@ function displayDocuments(documents) {
      $('#searchContainer')[0].innerHTML = ''
      is_prod = false;
      $("#prod_section").hide();
+     $("#both_section").hide();
     if(documents && documents.length > 0) {
         documents.forEach(doc => {
             cardHtml = `
@@ -261,12 +262,13 @@ function displayDocuments(documents) {
                 is_prod = true;
                 $('#doc_in_prod').append(cardHtml);
             }
-
-            if(is_prod == true && $("#prod_section").css("display") === "none") {
-                $("#prod_section").show();
-            }
             $('#searchContainer').append(cardHtml);
         });
+
+        if(is_prod == true) {
+            $("#prod_section").show();
+        }
+        $("#both_section").show();
     } else {
         $("#no_data").css("display", "block");
     }
